@@ -24,4 +24,33 @@ app.get('/products', async (req, res) => {
   }
 });
 
+/**
+ * POST /products - Adds a new product
+ * @returns {Object} The created product
+ */
+app.post('/products', async (req, res) => {
+  try {
+    const { name, price } = req.body;
+
+    if (typeof name !== 'string' || name.trim() === '') {
+      return res.status(400).json({ error: 'Name must be a non-empty string' });
+    }
+
+    if (typeof price !== 'number' || price <= 0) {
+      return res.status(400).json({ error: 'Price must be a positive number' });
+    }
+
+    const newProduct = {
+      id: products.length + 1,
+      name,
+      price,
+    };
+
+    products.push(newProduct);
+    res.status(201).json(newProduct);
+  } catch (error) {
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
 module.exports = app;
