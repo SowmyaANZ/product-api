@@ -5,9 +5,9 @@ const app = express();
  * In-memory array of sample products
  */
 const products = [
-  { id: 1, name: 'Laptop', price: 999.99 },
-  { id: 2, name: 'Smartphone', price: 499.99 },
-  { id: 3, name: 'Headphones', price: 149.99 },
+  { id: 1, name: 'Laptop', price: 999.99, archived: false },
+  { id: 2, name: 'Smartphone', price: 499.99, archived: false },
+  { id: 3, name: 'Headphones', price: 149.99, archived: false },
 ];
 
 /**
@@ -29,12 +29,13 @@ const validateProduct = (product) => {
 app.use(express.json());
 
 /**
- * GET /products - Returns a list of all products
+ * GET /products - Returns a list of all non-archived products
  * @returns {Array} List of products
  */
 app.get('/products', async (req, res) => {
   try {
-    res.json(products);
+    const activeProducts = products.filter((p) => !p.archived);
+    res.json(activeProducts);
   } catch (error) {
     res.status(500).json({ error: 'Internal Server Error' });
   }
@@ -75,6 +76,7 @@ app.post('/products', async (req, res) => {
       id: products.length + 1,
       name,
       price,
+      archived: false,
     };
 
     products.push(newProduct);
@@ -103,10 +105,50 @@ app.put('/products/:id', async (req, res) => {
     }
 
     const { name, price } = req.body;
-    const updatedProduct = { id, name, price };
+    const updatedProduct = { id, name, price, archived: products[productIndex].archived };
 
     products[productIndex] = updatedProduct;
     res.json(updatedProduct);
+  } catch (error) {
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+/**
+ * PATCH /products/:id/archive - Soft archives a product
+ * @returns {Object} The archived product
+ */
+app.patch('/products/:id/archive', async (req, res) => {
+  try {
+    const id = parseInt(req.params.id);
+    const product = products.find((p) => p.id === id);
+
+    if (!product) {
+      return res.status(404).json({ error: 'Product not found' });
+    }
+
+    product.archived = true;
+    res.json(product);
+  } catch (error) {
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+/**
+ * DELETE /products/:id - Permanently deletes a product
+ * @returns {void} 204 No Content
+ */
+app.delete('/products/:id', async (req, res) => {
+  try {
+    const id = parseInt(req.params.id);
+    const productIndex = products.findIndex((p) => p.id === id);
+
+    if (productIndex === -1) {
+      return res.status(404).json({ error: 'Product not found' });
+    }
+
+    products.splice(productIndex, 1);
+    res.status(204).send();
   } catch (error) {
     res.status(500).json({ error: 'Internal Server Error' });
   }
