@@ -1,4 +1,8 @@
 const express = require('express');
+const swaggerUi = require('swagger-ui-express');
+const yaml = require('yaml');
+const fs = require('fs');
+const path = require('path');
 const app = express();
 
 const products = [
@@ -37,6 +41,12 @@ const validateProduct = (product) => {
 };
 
 app.use(express.json());
+
+/**
+ * Serves OpenAPI documentation via Swagger UI
+ */
+const openapiSpec = yaml.parse(fs.readFileSync(path.join(__dirname, '../openapi.yaml'), 'utf8'));
+app.use('/docs', swaggerUi.serve, swaggerUi.setup(openapiSpec));
 
 /**
  * GET /products - Returns a list of all non-archived products
