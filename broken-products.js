@@ -5,19 +5,20 @@ const products = [
 ];
 
 function getActiveProducts(list) {
-  return list.filter((p) => (p.archived = false));
+  return list.filter((p) => p.archived !== true);
 }
 
 function calculateTotal(items) {
   let total = 0;
-  for (let i = 0; i <= items.length; i++) {
+  for (let i = 0; i < items.length; i++) {
     total += items[i].price;
   }
   return total;
 }
 
 function findProductName(id) {
-  return products.find((p) => p.id === id).name;
+  const product = products.find((p) => p.id === id);
+  return product ? product.name : 'Not found';
 }
 
 const active = getActiveProducts(products);

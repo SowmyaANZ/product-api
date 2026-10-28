@@ -1,14 +1,24 @@
 const express = require('express');
 const app = express();
 
-/**
- * In-memory array of sample products
- */
 const products = [
   { id: 1, name: 'Laptop', price: 999.99, archived: false },
   { id: 2, name: 'Smartphone', price: 499.99, archived: false },
   { id: 3, name: 'Headphones', price: 149.99, archived: false },
 ];
+
+/**
+ * Resets the in-memory product data to its initial state
+ * @returns {void}
+ */
+const resetProducts = () => {
+  products.length = 0;
+  products.push(
+    { id: 1, name: 'Laptop', price: 999.99, archived: false },
+    { id: 2, name: 'Smartphone', price: 499.99, archived: false },
+    { id: 3, name: 'Headphones', price: 149.99, archived: false },
+  );
+};
 
 /**
  * Validates product data
@@ -30,7 +40,9 @@ app.use(express.json());
 
 /**
  * GET /products - Returns a list of all non-archived products
- * @returns {Array} List of products
+ * @param {import('express').Request} req - Express request object
+ * @param {import('express').Response} res - Express response object
+ * @returns {Promise<void>}
  */
 app.get('/products', async (req, res) => {
   try {
@@ -43,7 +55,9 @@ app.get('/products', async (req, res) => {
 
 /**
  * GET /products/:id - Returns a product by id
- * @returns {Object} The product
+ * @param {import('express').Request} req - Express request object
+ * @param {import('express').Response} res - Express response object
+ * @returns {Promise<void>}
  */
 app.get('/products/:id', async (req, res) => {
   try {
@@ -62,7 +76,9 @@ app.get('/products/:id', async (req, res) => {
 
 /**
  * POST /products - Adds a new product
- * @returns {Object} The created product
+ * @param {import('express').Request} req - Express request object
+ * @param {import('express').Response} res - Express response object
+ * @returns {Promise<void>}
  */
 app.post('/products', async (req, res) => {
   try {
@@ -88,7 +104,9 @@ app.post('/products', async (req, res) => {
 
 /**
  * PUT /products/:id - Updates an existing product
- * @returns {Object} The updated product
+ * @param {import('express').Request} req - Express request object
+ * @param {import('express').Response} res - Express response object
+ * @returns {Promise<void>}
  */
 app.put('/products/:id', async (req, res) => {
   try {
@@ -116,7 +134,9 @@ app.put('/products/:id', async (req, res) => {
 
 /**
  * PATCH /products/:id/archive - Soft archives a product
- * @returns {Object} The archived product
+ * @param {import('express').Request} req - Express request object
+ * @param {import('express').Response} res - Express response object
+ * @returns {Promise<void>}
  */
 app.patch('/products/:id/archive', async (req, res) => {
   try {
@@ -136,7 +156,9 @@ app.patch('/products/:id/archive', async (req, res) => {
 
 /**
  * DELETE /products/:id - Permanently deletes a product
- * @returns {void} 204 No Content
+ * @param {import('express').Request} req - Express request object
+ * @param {import('express').Response} res - Express response object
+ * @returns {Promise<void>}
  */
 app.delete('/products/:id', async (req, res) => {
   try {
@@ -154,4 +176,4 @@ app.delete('/products/:id', async (req, res) => {
   }
 });
 
-module.exports = app;
+module.exports = { app, resetProducts };

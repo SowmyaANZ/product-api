@@ -2,7 +2,8 @@ const app = require('./app');
 
 /**
  * Starts the Express server
- * @param {number} port - The port to listen on
+ * @param {number} [port=3000] - The port to listen on
+ * @returns {Promise<void>}
  */
 const startServer = async (port = 3000) => {
   try {
